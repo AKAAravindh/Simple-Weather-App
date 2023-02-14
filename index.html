@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/f32fcd4286.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="style.css">
+    <title>Weather Application</title>
+</head>
+
+<body onload="move()">
+    <span id="loading" class="loading animate__animated animate__fadeOut animate__delay-2s">
+
+        <div style="width: 60%; padding: 1rem; display: flex; flex-direction: column; align-items: center;">
+            <span style="padding:0 1rem 1rem; font-size: 2rem; color: gold;">
+                loading...
+            </span>
+            <div id="myProgress">
+                <div id="myBar"></div>
+            </div>
+        </div>
+
+    </span>
+    
+    <main id="main" class=" animate__animated animate__fadeIn animate__delay-2s">
+
+        <section>
+            <div class="main-div1 main-div"></div>
+            <div class="main-div2 main-div">
+                <div class="search-div">
+                    <input type="text" id="userInput" class="userInput" placeholder="Search for cities">
+                    <button type="button" onclick="search()">Search</button>
+                </div>
+                <div class="display-div child-div" id="display">
+
+
+                    <div class="display-child" style="display: flex; flex-direction: column; justify-content: center;">
+                        <div class="names">
+                            <h1> &nbsp; </h1>
+                        </div>
+                        <div class="temp">0 °C</div>
+                    </div>
+                    <!-- <div class="display-child">
+                        
+                    </div> -->
+                    <!-- <div class="display-child">
+                        <img src="http://openweathermap.org/img/w/02d.png" alt="">
+                    </div> -->
+
+
+                </div>
+                <div class="child-div2 child-div">
+
+                </div>
+                <div id="div2" class="child-div1 child-div">
+                    <div>
+                        <p><i class="fa-solid fa-wind"></i>WIND</p>
+                        <h3>0.0 m/s</h3>
+                    </div>
+                    <div>
+                        <p><i class="fa-solid fa-droplet"></i>HUMIDITY</p>
+                        <h3>0.0 %</h3>
+                    </div>
+                    <div>
+                        <p><i class="fa-solid fa-gauge"></i>PRESSURE</p>
+                        <h3>0.0 atm</h3>
+                    </div>
+                    <div>
+                        <p><i class="fa-solid fa-eye"></i>VISIBILITY</p>
+                        <h3>0.0 %</h3>
+                    </div>
+                </div>
+
+            </div>
+            <div id="div3" class="main-div3 main-div">
+                <div>
+                    <div>
+                        <p>Temperature</p>
+                        <h3>0.0°</h3>
+                    </div>
+                    <div>
+                        <p>Minimum Temperature</p>
+                        <h3>0.0°</h3>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <p>Maximum Temperature</p>
+                        <h3>0.0°</h3>
+                    </div>
+                    <div>
+                        <p>Longitude</p>
+                        <h3>0.0</h3>
+                    </div>
+                    <div>
+                        <p>Latitude</p>
+                        <h3>0.0</h3>
+                    </div>
+                    <div>
+                        <p>Wind Gust</p>
+                        <h3>0.0 m/s</h3>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </main>
+</body>
+<script>
+    var i = 0;
+    function move() {
+        if (i == 0) {
+            i = 1;
+            var elem = document.getElementById("myBar");
+            var width = 10;
+            var id = setInterval(frame, 10);
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                    i = 0;
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                    // elem.innerHTML = width + "%";
+                }
+            }
+        }
+    }
+</script>
+<script>
+
+
+    var cName = userInput.value
+
+    if (!cName) {
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=kerala&units=metric&appid=8ac5c4d57ba6a4b3dfcf622700447b1e`).then(result => {
+            result.json().then(datas => {
+                displayDatas(datas);
+            })
+        })
+        setTimeout(displayDatas, 100)
+        async function displayDatas(datas) {
+            htmlData = await `
+                    <div class="display-child display-child1">
+                        <div class="names">
+                            <h1>${datas.name}</h1>
+                            <p>${datas.weather[0].main}, ${datas.weather[0].description}</p>
+                        </div>
+                        <div class="temp">${datas.main.temp}°</div>
+                    </div>
+
+                    <div class="display-child display-child3">
+                        <img src="http://openweathermap.org/img/w/${datas.weather[0].icon}.png" alt="">
+                    </div>
+        `
+            display.innerHTML = htmlData
+
+            htmlData2 = `
+            <div>
+            <p><i class="fa-solid fa-wind"></i>WIND</p>
+                <h3>${datas.wind.speed} m/s</h3>
+            </div>
+            <div>
+                <p><i class="fa-solid fa-droplet"></i>HUMIDITY</p>
+                <h3>${datas.main.humidity} %</h3>
+            </div>
+            <div>
+                <p><i class="fa-solid fa-gauge"></i>PRESSURE</p>
+                <h3>${datas.main.pressure / 1000} atm</h3>
+            </div>
+            <div>
+                <p><i class="fa-solid fa-eye"></i>VISIBILITY</p>
+                <h3>${datas.visibility / 1000} km</h3>
+            </div>
+        `
+            div2.innerHTML = htmlData2
+
+
+            htmlData3 = `
+                <div>
+                    <div>
+                        <p>Temperature</p>
+                        <h3>${datas.main.temp}°</h3>
+                    </div>
+                    <div>
+                        <p>Minimum Temperature</p>
+                        <h3>${datas.main.temp_min}°</h3>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <p>Maximum Temperature</p>
+                        <h3>${datas.main.temp_max}°</h3>
+                    </div>
+                    <div>
+                        <p>Longitude</p>
+                        <h3>${datas.coord.lon}</h3>
+                    </div>
+                    <div>
+                        <p>Latitude</p>
+                        <h3>${datas.coord.lat}</h3>
+                    </div>
+                    <div>
+                        <p>Wind Gust</p>
+                        <h3>${datas.wind.gust} m/s</h3>
+                    </div>
+                </div>
+        `
+            div3.innerHTML = htmlData3
+        }
+    }
+    var input = document.getElementById("userInput");
+    input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            search()
+        }
+    });
+    async function search() {
+        var cName = userInput.value
+        console.log(cName);
+        if (cName) {
+            const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cName}&units=metric&appid=8ac5c4d57ba6a4b3dfcf622700447b1e`)
+            response.json().then((data) => {
+                console.log(data);
+                displayData(data)
+            })
+        }
+    }
+
+    async function displayData(data) {
+        htmlData = await `
+                    <div class="display-child display-child1">
+                        <div class="names">
+                            <h1>${data.name}</h1>
+                            <p>${data.weather[0].main}, ${data.weather[0].description}</p>
+                        </div>
+                        <div class="temp">${data.main.temp}°</div>
+                    </div>
+
+                    <div class="display-child display-child3">
+                        <img src="http://openweathermap.org/img/w/${data.weather[0].icon}.png" alt="">
+                    </div>
+        `
+        display.innerHTML = htmlData
+
+        htmlData2 = `
+            <div>
+            <p><i class="fa-solid fa-wind"></i>WIND</p>
+                <h3>${data.wind.speed} m/s</h3>
+            </div>
+            <div>
+                <p><i class="fa-solid fa-droplet"></i>HUMIDITY</p>
+                <h3>${data.main.humidity} %</h3>
+            </div>
+            <div>
+                <p><i class="fa-solid fa-gauge"></i>PRESSURE</p>
+                <h3>${data.main.pressure / 1000} atm</h3>
+            </div>
+            <div>
+                <p><i class="fa-solid fa-eye"></i>VISIBILITY</p>
+                <h3>${data.visibility / 1000} km</h3>
+            </div>
+        `
+        div2.innerHTML = htmlData2
+
+        htmlData3 = `
+                <div>
+                    <div>
+                        <p>Temperature</p>
+                        <h3>${data.main.temp}°</h3>
+                    </div>
+                    <div>
+                        <p>Minimum Temperature</p>
+                        <h3>${data.main.temp_min}°</h3>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <p>Maximum Temperature</p>
+                        <h3>${data.main.temp_max}°</h3>
+                    </div>
+                    <div>
+                        <p>Longitude</p>
+                        <h3>${data.coord.lon}</h3>
+                    </div>
+                    <div>
+                        <p>Latitude</p>
+                        <h3>${data.coord.lat}</h3>
+                    </div>
+                    <div>
+                        <p>Wind Gust</p>
+                        <h3>${data.wind.gust} m/s</h3>
+                    </div>
+                </div>
+        `
+        div3.innerHTML = htmlData3
+    }
+
+    setTimeout(loadingScreen, 2000)
+
+    function loadingScreen() {
+        main.style.visibility = "visible"
+        loading.style.display="none"
+    }
+</script>
+
+</html>
